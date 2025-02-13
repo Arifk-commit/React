@@ -1,60 +1,53 @@
-// using without useEffect hook
+// using useEffect hook
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useRef } from 'react'
+import { useEffect, useState, useCallback } from 'react';
 import './App.css';
 
 function App() {
+
   const [length, setLength] = useState(4);
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false);
   const [password, setPassword] = useState("");
 
-  useEffect(()=>{
-    console.log("App is Mounting");
-  }, [])
+    useEffect(()=>{
+        console.log("App2 is mounting..")
+    }, [])
 
-  // function for generating password
-  const passGen = () => {
-    let pass = "";
+
+ const passGen =  ()=>{
+    let pass = ''
     let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZqwertyuioplkjhgfdsazxcvbnm";
 
-
-    if (numberAllowed) {
-      str += "0123456789";
-
+    if(numberAllowed){
+        str+= '1234567890'
+    }
+    if(charAllowed){
+        str += "!@#$%^&*(){}/[]\\|~`";
     }
 
-
-    if (charAllowed) {
-      str += "!@#$%^&*(){}/[]\\|~`";
+    for(let i=0;i<length;i++){
+        let char = Math.floor(Math.random() * str.length);
+        pass += str.charAt(char); 
     }
+    setPassword(pass)
+}
 
+useEffect(()=>{
+    passGen();
+    console.log("Password updated")
+} , [length,numberAllowed,charAllowed ])
 
-    for (let i = 0; i < length; i++) {
-      let char = Math.floor(Math.random() * str.length);
-      pass += str.charAt(char);
-    }
+const passref = useRef('Null')
+const copypass = useCallback(()=>{
+    passref.current.select();
+    passref.current?.setSelectionRange(0, 4);
+    window.navigator.clipboard.writeText(password)
+} , [password] )
 
-    setPassword(pass);
-  };
-
-
-  // useEffect(() => {
-  //   passGen();
-  // }, [length, numberAllowed, charAllowed, passGen]);
-
-  const passref = useRef('null');
-  const copypass = useCallback(() => {
-    window.navigator.clipboard.writeText(password);
-  }, [password])
-
-
-
-  return (
-
-
+ return (
     <div>
-    
       <h1>Password Generator</h1>
       <div className="input-group flex-nowrap">
         <span className="input-group-text" id="addon-wrapping">@</span>
@@ -70,7 +63,9 @@ function App() {
           readOnly
           ref={passref}
         />
-        <button type="button" className="btn btn-outline-info" onClick={copypass}>Copy</button>
+        <button type="button" className="btn btn-outline-info" onClick={copypass}>
+            Copy
+            </button>
       </div>
 
       <div className="flex flex-wrap">
@@ -107,14 +102,9 @@ function App() {
           <label>Special Characters</label>
         </div>
       </div>
-      <div>
-        <button type="button" class="btn btn-outline-info" onClick={passGen}>Generate</button>
-      </div>
-
-
       
     </div>
   );
 }
 
-export default App;
+export default App
